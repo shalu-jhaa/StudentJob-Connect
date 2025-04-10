@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudentJob Connect - Find Your Perfect Student Job</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .resume-dropzone {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        .resume-dropzone.active {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .animate-bounce {
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Header/Navigation -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-briefcase text-2xl"></i>
+                    <h1 class="text-2xl font-bold">StudentJob Connect</h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="hover:text-blue-200 font-medium">Home</a>
+                    <a href="#" class="hover:text-blue-200 font-medium">Jobs</a>
+                    <a href="#" class="hover:text-blue-200 font-medium">Companies</a>
+                    <a href="#" class="hover:text-blue-200 font-medium">Resources</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button class="px-4 py-2 rounded-full bg-white text-purple-700 font-semibold hover:bg-purple-50 transition">Sign In</button>
+                    <button class="md:hidden text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Find the Perfect Student Job</h1>
+                <p class="text-xl mb-8">Upload your resume and let our AI match you with the best student job opportunities tailored to your skills and schedule.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="px-8 py-3 bg-white text-purple-700 font-semibold rounded-full hover:bg-purple-50 transition">Browse Jobs</button>
+                    <button class="px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-purple-700 transition">How It Works</button>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://illustrations.popsy.co/amber/student.svg" alt="Student with laptop" class="w-full max-w-md">
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Upload Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Get Matched with Your Dream Job</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Upload your resume and we'll analyze your skills, experience, and availability to find the perfect student job for you.</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto bg-gray-50 rounded-xl p-8 shadow-sm">
+                <div id="dropzone" class="resume-dropzone rounded-lg p-12 text-center cursor-pointer">
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-blue-500 mb-4 animate-bounce"></i>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Drag & Drop Your Resume Here</h3>
+                        <p class="text-gray-500 mb-4">or click to browse files</p>
+                        <p class="text-sm text-gray-400">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                    </div>
+                    <input type="file" id="resume-upload" class="hidden" accept=".pdf,.doc,.docx">
+                </div>
+                
+                <div id="upload-progress" class="mt-6 hidden">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-blue-700">Uploading...</span>
+                        <span class="text-sm font-medium text-blue-700" id="progress-percent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="upload-success" class="mt-6 p-4 bg-green-50 rounded-lg hidden">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                        <div>
+                            <h4 class="font-medium text-green-800">Resume Uploaded Successfully!</h4>
+                            <p class="text-sm text-green-600">We're analyzing your resume to find the best matches.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <button id="analyze-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Analyze My Resume
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">How It Works</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Our simple 3-step process to connect you with the perfect student job</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-file-upload text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Upload Your Resume</h3>
+                    <p class="text-gray-600">Simply upload your resume in any common format. We'll extract your skills, experience, and availability.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-robot text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">AI Matching</h3>
+                    <p class="text-gray-600">Our advanced AI analyzes your profile and matches you with suitable jobs based on your skills and schedule.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-briefcase text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Get Hired</h3>
+                    <p class="text-gray-600">Apply directly through our platform and get hired for jobs that fit your student lifestyle perfectly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job Listings Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Recommended Jobs For You</h2>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-filter mr-2"></i> Filters
+                    </button>
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-map-marker-alt mr-2"></i> Location
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="job-listings">
+                <!-- Job cards will be dynamically inserted here -->
+            </div>
+            
+            <div class="mt-10 text-center">
+                <button class="px-6 py-3 border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
+                    Load More Jobs
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Success Stories</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Hear from students who found their perfect jobs through our platform</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Sarah Johnson</h4>
+                            <p class="text-sm text-gray-500">Computer Science Student</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"I found a perfect part-time developer job that fits around my classes. The AI matching was spot on!"</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Michael Chen</h4>
+                            <p class="text-sm text-gray-500">Business Administration</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"The resume analysis helped me discover skills I didn't even know I had. Got 3 interview offers in a week!"</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Priya" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold">Priya Patel</h4>
+                            <p class="text-sm text-gray-500">Biology Major</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"As an international student, I struggled to find work. This platform connected me with employers who understand my visa status."</p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Find Your Perfect Student Job?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join thousands of students who have already found flexible, well-paying jobs that fit their schedules.</p>
+            <button class="px-8 py-3 bg-white text-purple-700 font-semibold rounded-full hover:bg-purple-50 transition">
+                Upload Your Resume Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">StudentJob Connect</h3>
+                    <p class="text-gray-400">Connecting students with meaningful employment opportunities since 2023.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">For Students</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Browse Jobs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Career Resources</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Resume Builder</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Interview Tips</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">For Employers</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Post a Job</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Browse Candidates</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Pricing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Employer Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-400">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-700">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                    <p class="text-gray-400">support@studentjobconnect.com</p>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+                <p>© 2023 StudentJob Connect. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample job data
+        const jobs = [
+            {
+                title: "Campus Ambassador",
+                company: "TechStart Inc.",
+                location: "Remote",
+                type: "Part-time",
+                salary: "$15-$20/hr",
+                description: "Represent TechStart on your campus, organize events, and promote our products to fellow students.",
+                skills: ["Marketing", "Communication", "Social Media"],
+                logo: "https://logo.clearbit.com/techstart.com"
+            },
+            {
+                title: "Research Assistant",
+                company: "University Biology Dept.",
+                location: "On-campus",
+                type: "Part-time",
+                salary: "$16/hr",
+                description: "Assist professors with biology research projects, including lab work and data analysis.",
+                skills: ["Biology", "Lab Skills", "Data Analysis"],
+                logo: "https://logo.clearbit.com/university.edu"
+            },
+            {
+                title: "Web Developer Intern",
+                company: "Digital Solutions",
+                location: "Hybrid",
+                type: "Internship",
+                salary: "$18-$22/hr",
+                description: "Work with our development team to build and maintain client websites using modern frameworks.",
+                skills: ["HTML/CSS", "JavaScript", "React"],
+                logo: "https://logo.clearbit.com/digitalsolutions.com"
+            },
+            {
+                title: "Library Assistant",
+                company: "City Public Library",
+                location: "On-site",
+                type: "Part-time",
+                salary: "$14/hr",
+                description: "Help patrons find materials, check out books, and maintain library organization.",
+                skills: ["Customer Service", "Organization", "Attention to Detail"],
+                logo: "https://logo.clearbit.com/library.org"
+            },
+            {
+                title: "Social Media Manager",
+                company: "Local Cafe",
+                location: "Remote",
+                type: "Freelance",
+                salary: "$150-$200/week",
+                description: "Create and schedule social media content to promote our cafe and engage with customers.",
+                skills: ["Content Creation", "Instagram", "Facebook"],
+                logo: "https://logo.clearbit.com/localcafe.com"
+            },
+            {
+                title: "Tutor - Math & Science",
+                company: "LearnSmart Tutoring",
+                location: "Remote/In-person",
+                type: "Flexible",
+                salary: "$25-$35/hr",
+                description: "Provide one-on-one tutoring to high school students in math and science subjects.",
+                skills: ["Teaching", "Mathematics", "Patience"],
+                logo: "https://logo.clearbit.com/learnsmart.com"
+            }
+        ];
+
+        // DOM elements
+        const dropzone = document.getElementById('dropzone');
+        const resumeUpload = document.getElementById('resume-upload');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const uploadSuccess = document.getElementById('upload-success');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const jobListings = document.getElementById('job-listings');
+
+        // Display job listings
+        function displayJobs() {
+            jobListings.innerHTML = '';
+            jobs.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card bg-white rounded-xl shadow-sm p-6 transition duration-300 hover:shadow-md';
+                jobCard.innerHTML = `
+                    <div class="flex items-start mb-4">
+                        <img src="${job.logo}" alt="${job.company} logo" class="w-12 h-12 rounded-md object-contain mr-4">
+                        <div>
+                            <h3 class="font-bold text-lg">${job.title}</h3>
+                            <p class="text-gray-600">${job.company} • ${job.location}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full mr-2">${job.type}</span>
+                        <span class="text-gray-800 font-medium">${job.salary}</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">${job.description}</p>
+                    <div class="mb-4">
+                        ${job.skills.map(skill => `<span class="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">${skill}</span>`).join('')}
+                    </div>
+                    <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                        Apply Now
+                    </button>
+                `;
+                jobListings.appendChild(jobCard);
+            });
+        }
+
+        // Initialize job listings
+        displayJobs();
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropzone.classList.add('active');
+        }
+
+        function unhighlight() {
+            dropzone.classList.remove('active');
+        }
+
+        dropzone.addEventListener('drop', handleDrop, false);
+        dropzone.addEventListener('click', () => resumeUpload.click());
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        resumeUpload.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (validateFile(file)) {
+                    simulateUpload(file);
+                }
+            }
+        }
+
+        function validateFile(file) {
+            const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a PDF, DOC, or DOCX file.');
+                return false;
+            }
+            
+            if (file.size > maxSize) {
+                alert('File size exceeds 5MB limit.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function simulateUpload(file) {
+            uploadProgress.classList.remove('hidden');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 1;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${progress}%`;
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        uploadProgress.classList.add('hidden');
+                        uploadSuccess.classList.remove('hidden');
+                        analyzeBtn.disabled = false;
+                        
+                        // Change dropzone content after upload
+                        dropzone.innerHTML = `
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fas fa-file-alt text-5xl text-blue-500 mb-4"></i>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-1">${file.name}</h3>
+                                <p class="text-sm text-gray-500 mb-4">${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                                <button id="change-file" class="text-blue-600 hover:text-blue-800 font-medium">Change File</button>
+                            </div>
+                        `;
+                        
+                        document.getElementById('change-file').addEventListener('click', () => {
+                            resumeUpload.value = '';
+                            uploadSuccess.classList.add('hidden');
+                            analyzeBtn.disabled = true;
+                            dropzone.innerHTML = `
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-cloud-upload-alt text-5xl text-blue-500 mb-4 animate-bounce"></i>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Drag & Drop Your Resume Here</h3>
+                                    <p class="text-gray-500 mb-4">or click to browse files</p>
+                                    <p class="text-sm text-gray-400">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                                </div>
+                            `;
+                        });
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        // Analyze button click
+        analyzeBtn.addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
+            
+            // Simulate analysis
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check mr-2"></i> Analysis Complete';
+                this.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                this.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                // Scroll to job listings
+                document.querySelector('#job-listings').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
